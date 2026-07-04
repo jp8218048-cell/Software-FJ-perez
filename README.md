@@ -1,3 +1,5 @@
+<img width="738" height="414" alt="empresa sistema" src="https://github.com/user-attachments/assets/8ac7b51a-0bc8-420f-b238-e9d2d07dfa9c" />
+<img width="738" height="414" alt="empresa sistema" src="https://github.com/user-attachments/assets/3050b32b-b22e-413c-a2c8-2ce2e0288a29" />
 # Software-FJ-perez
 Jorge Pérez-programación 
  ofrece varios tipos de servicios (reservas de salas, alquiler de equipos y asesorías especializadas). 
