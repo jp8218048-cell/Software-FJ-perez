@@ -80,7 +80,6 @@ from logger import registrar, registrar_error
 
 clientes=[]
 reservas=[]
-
 operaciones=[
     ("cliente",1,"Jorge Pérez","jp8218048@gmail.com"),
     ("cliente",2,"Ana","ana@gmail.com"),
