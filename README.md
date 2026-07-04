@@ -165,3 +165,9 @@ try:
 except Exception as e:
     registrar_error(e)
 print("Sistema funcionando correctamente.")
+git init
+git add .
+git commit -m "Sistema Integral de Gestión Software FJ"
+git branch -M main
+git remote add origin https://github.com/USUARIO/SistemaGestionSoftwareFJ.git
+git push -u origin main
