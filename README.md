@@ -92,7 +92,7 @@ operaciones=[
 # Clientes válidos
 
 try:
-    c1=Cliente(1,"Jorge Pérez","jorge@gmail.com")
+    c1=Cliente(1,"Jorge Pérez","jp8218048@gmail.com")
     clientes.append(c1)
     registrar("Cliente registrado")
 
