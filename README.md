@@ -81,13 +81,12 @@ from logger import registrar, registrar_error
 clientes=[]
 reservas=[]
 operaciones=[
-    ("cliente",1,"Jorge Pérez",<jp8218048@gmail.com>,
-    ("cliente",2,"Ana",<ana@gmail.com>,
+    ("cliente",1,"Jorge Pérez",Correo:[jp8218048@gmail.com](mailto:jp8218048@gmail.com),
+    ("cliente",2,"Ana",Correo:[ana@gmail.com,](mailto:ana@gmail.com),
     ("cliente",3,"","correo"),
-    ("cliente",4,"Carlos",<carlos@gmail.com>,
+    ("cliente",4,"Carlos",<carlos@gmail.com>,Correo:[carlos@gmail.com](mailto:carlos@gmail.com),
     ("reserva",),
 ]
-
 # Clientes válidos
 
 try:
