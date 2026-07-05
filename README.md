@@ -160,5 +160,5 @@ git init
 git add .
 git commit -m "Sistema Integral de Gestión Software FJ"
 git branch -M main
-git remote add origin https://github.com/USUARIO/SistemaGestionSoftwareFJ.git
+https://github.com/jp8218048-cell/Software-FJ-perez
 git push -u origin main
