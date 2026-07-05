@@ -162,3 +162,6 @@ git commit -m "Sistema Integral de Gestión Software FJ"
 git branch -M main
 https://github.com/jp8218048-cell/Software-FJ-perez
 git push -u origin main
+git remote -v
+git status
+git branch
