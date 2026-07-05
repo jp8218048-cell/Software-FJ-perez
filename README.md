@@ -81,23 +81,23 @@ from logger import registrar, registrar_error
 clientes=[]
 reservas=[]
 operaciones=[
-    ("cliente",1,"Jorge Pérez","jp8218048@gmail.com"),
-    ("cliente",2,"Ana","ana@gmail.com"),
+    ("cliente",1,"Jorge Pérez",<jorge@gmail.com>,
+    ("cliente",2,"Ana",<ana@gmail.com>,
     ("cliente",3,"","correo"),
-    ("cliente",4,"Carlos","carlos@gmail.com"),
+    ("cliente",4,"Carlos",<carlos@gmail.com>,
     ("reserva",),
 ]
 
 # Clientes válidos
 
 try:
-    c1=Cliente(1,"Jorge Pérez","jp8218048@gmail.com")
+    c1=Cliente(1,"Jorge Pérez",<jp8218048@gmail.com>
     clientes.append(c1)
     registrar("Cliente registrado")
 except Exception as e:
     registrar_error(e)
 try:
-    c2=Cliente(2,"Laura","laura@gmail.com")
+    c2=Cliente(2,"Laura",<laura@gmail.com>
     clientes.append(c2)
     registrar("Cliente registrado")
 except Exception as e:
