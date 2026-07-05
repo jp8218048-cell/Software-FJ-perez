@@ -84,7 +84,7 @@ operaciones=[
     ("cliente",1,"Jorge Pérez","jp8218048@gmail.com"),
     ("cliente",2,"Ana","ana@gmail.com"),
     ("cliente",3,"","correo"),
-    ("cliente",4,"Carlos","carlosgmail.com"),
+    ("cliente",4,"Carlos","carlos@gmail.com"),
     ("reserva",),
 ]
 
@@ -94,32 +94,23 @@ try:
     c1=Cliente(1,"Jorge Pérez","jp8218048@gmail.com")
     clientes.append(c1)
     registrar("Cliente registrado")
-
 except Exception as e:
     registrar_error(e)
-
 try:
     c2=Cliente(2,"Laura","laura@gmail.com")
     clientes.append(c2)
     registrar("Cliente registrado")
-
 except Exception as e:
     registrar_error(e)
-
 # Cliente inválido
-
 try:
     c3=Cliente(3,"","correo")
-
 except Exception as e:
     registrar_error(e)
-
 # Servicios
-
 sala=ServicioSala("Sala Premium",50000)
 equipo=ServicioEquipo("Computador",35000)
 asesoria=ServicioAsesoria("IA",80000)
-
 # Reserva válida
 try:
     r1=Reserva(c1,sala,3)
