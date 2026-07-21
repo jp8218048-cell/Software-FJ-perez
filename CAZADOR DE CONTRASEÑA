@@ -85,7 +85,6 @@ class Contrasena:
             random.choice(numeros),
             random.choice(especiales),
         ]
-
         # 2) Construimos el conjunto total de caracteres disponibles,
         #    excluyendo los que ya fueron usados en 'obligatorios' para
         #    evitar duplicados desde el inicio.
