@@ -39,9 +39,7 @@ class LongitudInvalidaError(Exception):
 class DatoNoNumericoError(Exception):
     """Se lanza cuando el usuario ingresa un valor que no puede convertirse
     a un número entero (por ejemplo, letras o símbolos)."""
-    pass
-
-
+    pass 
 class ContrasenaInvalidaError(Exception):
     """Se lanza cuando la contraseña generada no cumple con alguna de las
     reglas obligatorias (mayúscula, minúscula, número, carácter especial
