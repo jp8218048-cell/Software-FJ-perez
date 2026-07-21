@@ -1,0 +1,338 @@
+"""
+==================================================================================
+ JUEGO: EL CAZADOR DE 3 CONTRASEÑAS
+==================================================================================
+Autor: (Nombre del estudiante)
+Descripción: JORGE ARMANDO PEREZ JIMENEZ
+    El jugador asume el rol de un "Cazador de Contraseñas": en cada ronda se
+    genera una contraseña completamente aleatoria y se valida contra un conjunto
+    de reglas obligatorias. Si la contraseña es válida, se abre un cofre
+    (Común, Raro o Legendario) que otorga puntos. Si es inválida, se abre un
+    cofre Maldito que resta puntos.
+
+Requisitos que debe cumplir una contraseña válida:
+    - Longitud definida por el usuario (mínimo 8 caracteres).
+    - Al menos una letra mayúscula.
+    - Al menos una letra minúscula.
+    - Al menos un número.
+    - Al menos un carácter especial de la lista: ¿¡?=)(/¨*+-%&$#!
+    - No debe tener caracteres repetidos.
+==================================================================================
+"""
+
+import random
+import string
+
+
+# ==================================================================================
+# EXCEPCIONES PERSONALIZADAS
+# ==================================================================================
+# Se crean excepciones propias heredando de Exception para poder identificar y
+# manejar de forma específica cada tipo de error que puede ocurrir en el juego.
+
+class LongitudInvalidaError(Exception):
+    """Se lanza cuando la longitud ingresada por el usuario es menor a 8
+    o no cumple con el rango permitido por el juego."""
+    pass
+
+
+class DatoNoNumericoError(Exception):
+    """Se lanza cuando el usuario ingresa un valor que no puede convertirse
+    a un número entero (por ejemplo, letras o símbolos)."""
+    pass
+
+
+class ContrasenaInvalidaError(Exception):
+    """Se lanza cuando la contraseña generada no cumple con alguna de las
+    reglas obligatorias (mayúscula, minúscula, número, carácter especial
+    o caracteres repetidos)."""
+    pass
+
+
+# ==================================================================================
+# CLASE CONTRASEÑA
+# ==================================================================================
+class Contrasena:
+    """
+    Clase encargada de GENERAR y VALIDAR contraseñas aleatorias.
+
+    La generación se realiza garantizando que existan representantes de cada
+    categoría obligatoria (mayúscula, minúscula, número, carácter especial),
+    completando el resto de la longitud con caracteres aleatorios NO repetidos
+    tomados de todo el conjunto disponible, y finalmente mezclando el
+    resultado para que el orden no sea predecible.
+    """
+
+    # Conjunto de caracteres especiales permitidos (dado por la actividad)
+    CARACTERES_ESPECIALES = "¿¡?=)(/¨*+-%&$#!"
+
+    def __init__(self, longitud):
+        self.longitud = longitud
+        self.valor = None  #1Jor
+    def generar(self):
+        """
+        Genera una contraseña aleatoria de self.longitud caracteres, sin
+        caracteres repetidos, asegurando al menos un representante de cada
+        categoría obligatoria. Retorna la contraseña generada (str).
+        """
+        mayusculas = string.ascii_uppercase
+        minusculas = string.ascii_lowercase
+        numeros = string.digits
+        especiales = self.CARACTERES_ESPECIALES
+
+        # 1) Garantizamos un carácter obligatorio de cada categoría
+        obligatorios = [
+            random.choice(mayusculas),
+            random.choice(minusculas),
+            random.choice(numeros),
+            random.choice(especiales),
+        ]
+
+        # 2) Construimos el conjunto total de caracteres disponibles,
+        #    excluyendo los que ya fueron usados en 'obligatorios' para
+        #    evitar duplicados desde el inicio.
+        todos_los_caracteres = mayusculas + minusculas + numeros + especiales
+        disponibles = [c for c in todos_los_caracteres if c not in obligatorios]
+
+        # 3) Completamos el resto de la longitud con caracteres aleatorios
+        #    y sin repetición (random.sample no repite elementos).
+        cantidad_faltante = self.longitud - len(obligatorios)
+        if cantidad_faltante > len(disponibles):
+            # Protección extra por si se pide una longitud demasiado grande
+            cantidad_faltante = len(disponibles)
+
+        relleno = random.sample(disponibles, cantidad_faltante)
+
+        # 4) Unimos obligatorios + relleno y mezclamos el orden (aleatoriedad
+        #    total, sin patrón predecible).
+        caracteres_finales = obligatorios + relleno
+        random.shuffle(caracteres_finales)
+
+        self.valor = "".join(caracteres_finales)
+        return self.valor
+
+    def validar(self):
+        """
+        Valida que self.valor cumpla TODAS las reglas obligatorias.
+        Lanza ContrasenaInvalidaError si alguna regla no se cumple.
+        Retorna True si la contraseña es válida.
+        """
+        if self.valor is None:
+            raise ContrasenaInvalidaError("No se ha generado ninguna contraseña.")
+
+        errores = []
+
+        if len(self.valor) < 8:
+            errores.append("longitud menor a 8 caracteres")
+
+        if not any(c.isupper() for c in self.valor):
+            errores.append("falta al menos una letra mayúscula")
+
+        if not any(c.islower() for c in self.valor):
+            errores.append("falta al menos una letra minúscula")
+
+        if not any(c.isdigit() for c in self.valor):
+            errores.append("falta al menos un número")
+
+        if not any(c in self.CARACTERES_ESPECIALES for c in self.valor):
+            errores.append("falta al menos un carácter especial")
+
+        # Verificación de caracteres repetidos: si el largo del set (que
+        # elimina duplicados) es menor al largo original, hay repetidos.
+        if len(set(self.valor)) != len(self.valor):
+            errores.append("contiene caracteres repetidos")
+
+        if errores:
+            raise ContrasenaInvalidaError(
+                "Contraseña inválida -> " + "; ".join(errores)
+            )
+
+        return True
+
+
+# ==================================================================================
+# CLASE COFRE
+# ==================================================================================
+class Cofre:
+    """
+    Representa un cofre del juego. El tipo de cofre determina los puntos
+    que se otorgan (o restan) al jugador.
+    """
+
+    # Definimos los tipos de cofre disponibles y sus puntos asociados.
+    TIPOS = {
+        "Común": 10,
+        "Raro": 25,
+        "Legendario": 50,
+        "Maldito": -20,
+    }
+
+    def __init__(self, tipo):
+        if tipo not in Cofre.TIPOS:
+            raise ValueError(f"Tipo de cofre desconocido: {tipo}")
+        self.tipo = tipo
+        self.puntos = Cofre.TIPOS[tipo]
+
+    @staticmethod
+    def cofre_aleatorio_valido():
+        """
+        Genera un cofre aleatorio entre los cofres 'buenos' (Común, Raro,
+        Legendario). Se usan pesos para que el Legendario sea el más difícil
+        de obtener, simulando una mecánica tipo "loot" de videojuego.
+        """
+        tipo = random.choices(
+            population=["Común", "Raro", "Legendario"],
+            weights=[60, 30, 10],   # Común más probable, Legendario más raro
+            k=1
+        )[0]
+        return Cofre(tipo)
+
+    @staticmethod
+    def cofre_maldito():
+        """Genera el cofre Maldito, otorgado cuando la contraseña es inválida."""
+        return Cofre("Maldito")
+
+    def abrir(self):
+        """Devuelve un mensaje describiendo el resultado de abrir el cofre."""
+        signo = "+" if self.puntos >= 0 else ""
+        return f"Se abrió un cofre {self.tipo} -> {signo}{self.puntos} puntos"
+
+
+# ==================================================================================
+# CLASE JUEGOCAZADOR
+# ==================================================================================
+class JuegoCazador:
+    """
+    Clase principal que administra el flujo del juego:
+    - Controla el puntaje acumulado.
+    - Controla el número de rondas jugadas.
+    - Maneja las excepciones lanzadas por Contrasena.
+    - Permite que el usuario juegue varias rondas hasta que decida salir.
+    """
+
+    def __init__(self):
+        self.puntaje = 0
+        self.rondas_jugadas = 0
+
+    # ------------------------------------------------------------------
+    # Utilidad: pedir al usuario la longitud de la contraseña, validando
+    # que sea numérica y que cumpla la longitud mínima. Usa un bucle para
+    # volver a preguntar si el usuario se equivoca.
+    # ------------------------------------------------------------------
+    def solicitar_longitud(self):
+        while True:
+            entrada = input(
+                "Ingresa la longitud deseada para la contraseña (mínimo 8): "
+            )
+            try:
+                # Intentamos convertir a entero. Si falla, es un dato
+                # no numérico -> lanzamos nuestra excepción personalizada.
+                try:
+                    longitud = int(entrada)
+                except ValueError:
+                    raise DatoNoNumericoError(
+                        f"'{entrada}' no es un valor numérico válido."
+                    )
+
+                # Verificamos que la longitud cumpla el mínimo permitido.
+                if longitud < 8:
+                    raise LongitudInvalidaError(
+                        "La longitud debe ser de al menos 8 caracteres."
+                    )
+
+                return longitud
+
+            except DatoNoNumericoError as e:
+                print(f"[ERROR] {e} Intenta de nuevo.\n")
+            except LongitudInvalidaError as e:
+                print(f"[ERROR] {e} Intenta de nuevo.\n")
+
+    # ------------------------------------------------------------------
+    # Jugar una ronda completa: generar contraseña, validar, abrir cofre
+    # correspondiente y actualizar el puntaje.
+    # ------------------------------------------------------------------
+    def jugar_ronda(self):
+        self.rondas_jugadas += 1
+        print(f"\n===== RONDA {self.rondas_jugadas} =====")
+
+        longitud = self.solicitar_longitud()
+
+        contrasena = Contrasena(longitud)
+        contrasena.generar()
+        print(f"Contraseña generada: {contrasena.valor}")
+
+        try:
+            contrasena.validar()
+            # Contraseña válida -> se abre un cofre "bueno"
+            print("¡Contraseña VÁLIDA! El cofre se abre con éxito.")
+            cofre = Cofre.cofre_aleatorio_valido()
+
+        except ContrasenaInvalidaError as e:
+            # Contraseña inválida -> se abre el cofre Maldito
+            print(f"[ADVERTENCIA] {e}")
+            print("La contraseña es INVÁLIDA. Se abre un cofre Maldito.")
+            cofre = Cofre.cofre_maldito()
+
+        print(cofre.abrir())
+
+        self.puntaje += cofre.puntos
+        print(f"Puntaje acumulado: {self.puntaje}")
+
+    # ------------------------------------------------------------------
+    # Bucle principal del juego: permite jugar tantas rondas como el
+    # usuario desee, hasta que decida salir.
+    # ------------------------------------------------------------------
+    def iniciar(self):
+        print("=" * 60)
+        print(" BIENVENIDO AL JUEGO: EL CAZADOR DE 3 CONTRASEÑAS")
+        print("=" * 60)
+        print(
+            "Genera contraseñas aleatorias, ábrelas en cofres y acumula\n"
+            "puntos. ¡Cuidado con los cofres Malditos!\n"
+        )
+
+        continuar = True
+        while continuar:
+            self.jugar_ronda()
+
+            respuesta = input(
+                "\n¿Deseas jugar otra ronda? (s = sí / n = no): "
+            ).strip().lower()
+
+            while respuesta not in ("s", "n"):
+                respuesta = input(
+                    "Respuesta no válida. Escribe 's' para sí o 'n' para no: "
+                ).strip().lower()
+
+            if respuesta == "n":
+                continuar = False
+
+        self.mostrar_resumen_final()
+
+    # ------------------------------------------------------------------
+    # Muestra un resumen final con estadísticas del juego.
+    # ------------------------------------------------------------------
+    def mostrar_resumen_final(self):
+        print("\n" + "=" * 60)
+        print(" RESUMEN FINAL DEL JUEGO")
+        print("=" * 60)
+        print(f"Rondas jugadas   : {self.rondas_jugadas}")
+        print(f"Puntaje final    : {self.puntaje}")
+
+        if self.puntaje >= 100:
+            print("¡Eres un Cazador de Contraseñas LEGENDARIO!")
+        elif self.puntaje >= 50:
+            print("¡Buen trabajo, Cazador! Sigue practicando.")
+        else:
+            print("Sigue intentando, las contraseñas seguras requieren práctica.")
+
+        print("¡Gracias por jugar!")
+        print("=" * 60)
+
+
+# ==================================================================================
+# PUNTO DE ENTRADA DEL PROGRAMA
+# ==================================================================================
+if __name__ == "__main__":
+    juego = JuegoCazador()
+    juego.iniciar()
